@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  gocd-agent:
+    image: gocd-agent
+    depends_on: ["gocd-server"]
+    container_name: gocd-agent
+    environment:
+      AGENT_AUTO_REGISTER_KEY: "test"
+      GOCD_GITLAB_SSH_DEPLOY_KEY: "test"
+    command: ["gomplate","--file=/gocd/templates/autoregister.properties","--out=/gocd/runtime/config/autoregister.properties","--","java","-Xms128m","-Xmx256m","-Dcruise.config.dir=/gocd/config","-jar","../agent-bootstrapper.jar","-serverUrl","https://gocd-server:8154/go","-sslVerificationMode","NONE"]
+
+  gocd-server:
+    image: gocd-server
+    environment:
+      AGENT_AUTO_REGISTER_KEY: "test"
+      GOCD_ADMIN_PASSWORD: "test"

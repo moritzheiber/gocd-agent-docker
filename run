@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -Eeu -o pipefail
+
+IMAGE_NAME="gocd-agent"
+export IMAGE_NAME
+
+_ensure_bundle() {
+  bundle install --path vendor/bundle
+}
+
+build() {
+  docker build -t "${IMAGE_NAME}" .
+}
+
+_test() {
+  _ensure_bundle
+
+  bundle exec rspec
+}
+
+usage() {
+  echo "Usage ${0} build | test"
+}
+
+CMD=${1:-}
+shift || true
+case ${CMD} in
+  build) build ;;
+  test) _test ;;
+  *) usage ;;
+esac
